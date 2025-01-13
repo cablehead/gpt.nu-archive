@@ -108,26 +108,26 @@ open system-prompts/coding-assistant.nuon | append {
 } | gpt call
 ```
 
-### Response Streaming
+## Response Streaming
 
-`gpt call` sends the response through the Nushell pipeline, which you generally
-capture for later use:
+By default, `gpt call` sends its complete response through the Nushell pipeline:
 
 ```nu
-[{role: "user" content: "Explain streams"}] | gpt call | save response.txt  # Works silently
+> [{role: "user" content: "Explain streams"}] | gpt call | save response.txt  # Works silently
 ```
 
 Use the optional `--streamer` flag to monitor the response while it's being
 generated:
 
 ```nu
-[{role: "user" content: "Explain streams"}] | gpt call --streamer {|| print -n $in} | save response.txt
+> [{role: "user" content: "Explain streams"}] | gpt call --streamer {|| print -n $in} | save response.txt
 This is the response being printed... # Shown in real-time
 While also saving the complete response to response.txt
 ```
 
-The streamer closure allows you to see the response as it arrives while still
-capturing the full output in your pipeline.
+The streamer closure is called with small snippets of the response, as they are
+generated, and can present them however you like. In this example we're just
+printing to the terminal.
 
 ## Command Reference
 
@@ -188,13 +188,13 @@ $env.GPT_PROVIDERS = {
         }
     }
 }
+```
 
 ## Contributing
 
-Contributions are welcome! Particularly new provider implementations.
-Please feel free to submit a Pull Request.
+Contributions are welcome! Particularly new provider implementations. Please
+feel free to submit a Pull Request.
 
 ## License
 
 MIT
-```

@@ -163,6 +163,6 @@ export def --env select-provider [] {
 }
 
 export def --env ensure-provider [] {
-  if not ("GPT_PROVIDER" in $env) {select-provider}
+  if $env.GPT_PROVIDER? == null {select-provider}
   ensure-api-key $env.GPT_PROVIDER.name
 }

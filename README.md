@@ -12,6 +12,13 @@ handling streaming responses, and managing provider configurations.
 - Easy provider configuration and switching
 - [Easy to add new providers](#adding-a-new-provider)
 
+Here is an example of what we are attempting to accomplish. This page will help
+you turn the following pseudo-code pipeline into a functioning example (TBD):
+
+```nu
+collect documents to discuss | inject system prompt | inject RAG results | inject episodic memory | gpt call | analyze results
+```
+
 ## Installation
 
 1. Install [Nushell](https://www.nushell.sh)

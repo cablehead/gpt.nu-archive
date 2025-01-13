@@ -1,11 +1,11 @@
 export-env {
   # Coerce the provider to a record if it's a string.
-  $env.GPT2099_PROVIDER = match ($env.GPT2099_PROVIDER? | describe -d | get type) {
-    "string" => ($env.GPT2099_PROVIDER | from json)
-    _ => ($env.GPT2099_PROVIDER?)
+  $env.GPT_PROVIDER = match ($env.GPT_PROVIDER? | describe -d | get type) {
+    "string" => ($env.GPT_PROVIDER | from json)
+    _ => ($env.GPT_PROVIDER?)
   }
 
-  $env.GPT2099_PROVIDERS = {
+  $env.GPT_PROVIDERS = {
     openai: {
       models: {||
         (
@@ -128,8 +128,8 @@ def conditional-pipe [
 export def call [ --streamer: closure] {
   let content = $in
 
-  let config = $env.GPT2099_PROVIDER
-  let caller = $env.GPT2099_PROVIDERS | get $config.name | get call
+  let config = $env.GPT_PROVIDER
+  let caller = $env.GPT_PROVIDERS | get $config.name | get call
 
   (
     $content
@@ -150,19 +150,19 @@ export def --env ensure-api-key [name: string] {
 
 export def --env select-provider [] {
   print "Select a provider:"
-  let name = $env.GPT2099_PROVIDERS | columns | input list
+  let name = $env.GPT_PROVIDERS | columns | input list
   print $"Selected provider: ($name)"
 
-  let provider = $env.GPT2099_PROVIDERS | get $name
+  let provider = $env.GPT_PROVIDERS | get $name
   ensure-api-key $name
 
   print -n "Select model:"
   let model = do $provider.models | get id | input list --fuzzy
   print $"Selected model: ($model)"
-  $env.GPT2099_PROVIDER = { name: $name model: $model }
+  $env.GPT_PROVIDER = { name: $name model: $model }
 }
 
 export def --env ensure-provider [] {
-  if not ("GPT2099_PROVIDER" in $env) {select-provider}
-  ensure-api-key $env.GPT2099_PROVIDER.name
+  if not ("GPT_PROVIDER" in $env) {select-provider}
+  ensure-api-key $env.GPT_PROVIDER.name
 }

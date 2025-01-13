@@ -10,8 +10,6 @@ handling streaming responses, and managing provider configurations.
 - Current providers: OpenAI, Anthropic, Cerebras
 - Streaming responses support
 - Easy provider configuration and switching
-- Consistent message format using Nushell records
-- Built-in model listing and selection
 - [Easy to add new providers](#adding-a-new-provider)
 
 ## Installation

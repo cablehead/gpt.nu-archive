@@ -65,7 +65,7 @@ export-env {
           model: $model
           max_tokens: 8192
           stream: true
-          messages: $in
+          messages: ($in | update role {|x| if $x.role == "system" {"user"} else {$x.role}})
         }
 
         (

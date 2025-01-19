@@ -50,7 +50,9 @@ export-env {
           -H {
             "x-api-key": $env.ANTHROPIC_API_KEY
             "anthropic-version": "2023-06-01"
+ "anthropic-beta": "computer-use-2024-10-22"
           }
+
           https://api.anthropic.com/v1/models
           | get data
           | select id created_at
@@ -60,13 +62,28 @@ export-env {
         )
       }
 
-      call: {|model: string|
+      call: {|model: string, tools?: list|
         let data = {
           model: $model
           max_tokens: 8192
           stream: true
           messages: ($in | update role {|x| if $x.role == "system" {"user"} else {$x.role}})
+          tools: ($tools | default [])
         }
+
+        print ($data | to json)
+
+        return (
+          http post
+          --content-type application/json
+          -H {
+            "x-api-key": $env.ANTHROPIC_API_KEY
+            "anthropic-version": "2023-06-01"
+ "anthropic-beta": "computer-use-2024-10-22"
+          }
+          https://api.anthropic.com/v1/messages
+          $data
+          )
 
         (
           http post

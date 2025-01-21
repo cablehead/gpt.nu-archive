@@ -72,6 +72,8 @@ export-env {
           tools: ($tools | default [])
         }
 
+        try {
+
         return (
           http post
           --content-type application/json
@@ -83,6 +85,21 @@ export-env {
           https://api.anthropic.com/v1/messages
           $data
         )
+        } catch {|err|
+          print ($err.rendered)
+          print (http post
+          --content-type application/json
+          -f -e
+          -H {
+            "x-api-key": $env.ANTHROPIC_API_KEY
+            "anthropic-version": "2023-06-01"
+            "anthropic-beta": "computer-use-2024-10-22"
+          }
+          https://api.anthropic.com/v1/messages
+          $data | table -e
+          )
+          error make { msg: "TBD" }
+        }
 
         (
           http post

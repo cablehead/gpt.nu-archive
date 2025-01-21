@@ -50,7 +50,7 @@ export-env {
           -H {
             "x-api-key": $env.ANTHROPIC_API_KEY
             "anthropic-version": "2023-06-01"
- "anthropic-beta": "computer-use-2024-10-22"
+            "anthropic-beta": "computer-use-2024-10-22"
           }
 
           https://api.anthropic.com/v1/models
@@ -67,11 +67,10 @@ export-env {
           model: $model
           max_tokens: 8192
           stream: true
+          # TODO: anthropic only supports a single system message as a top level attribute
           messages: ($in | update role {|x| if $x.role == "system" {"user"} else {$x.role}})
           tools: ($tools | default [])
         }
-
-        print ($data | to json)
 
         return (
           http post
@@ -79,11 +78,11 @@ export-env {
           -H {
             "x-api-key": $env.ANTHROPIC_API_KEY
             "anthropic-version": "2023-06-01"
- "anthropic-beta": "computer-use-2024-10-22"
+            "anthropic-beta": "computer-use-2024-10-22"
           }
           https://api.anthropic.com/v1/messages
           $data
-          )
+        )
 
         (
           http post

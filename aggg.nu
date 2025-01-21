@@ -1,5 +1,4 @@
 export def main [] {
-
   lines | where ($it | str starts-with "data: ") | each {|x|
     $x | str substring 6.. | from json
   } | generate {|event state ={ message: null current_block: null blocks: [] }|
@@ -15,7 +14,7 @@ export def main [] {
       "ping" => { return { next: $state }}
 
       "content_block_start" => {
-        $state.current_block = $event.content_block | insert content []
+        $state.current_block = $event.content_block | insert content [] | reject text?
         return { next: $state }
       }
 
@@ -42,9 +41,13 @@ export def main [] {
       }
 
       "message_delta" => {
-        # print ($event | ept)
-        # TBD
-        return { next: $state }
+        return {
+          next: (
+            $state | merge deep {
+              message: ($event.delta | insert usage $event.usage)
+            }
+          )
+        }
       }
 
       "message_stop" => {

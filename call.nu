@@ -42,7 +42,7 @@ const computer_tools = [
 ]
 
 def "str_replace_editor view" [path: string] {
-  match ($path | path type)  {
+  match ($path | path type) {
     "file" => (cat -n $path)
     "dir" => (^find $path -maxdepth 2 -not -path '*/\.*')
     _ => { error make { msg: $"TBD: ($path)" }}
@@ -77,20 +77,24 @@ export def run-tool [] {
 
 export def handlers [] {
 
-  {tool_use: {|frame|
-  if $frame.topic != "message" { return }
-  if $frame.meta.role != "assistant" { return }
-  if $frame.meta.message.stop_reason != "tool_use" { return }
-  let content = .cas $frame.hash | from json
-  $content | where type == "tool_use" | each {run-tool} 
-}}
+  {
+    tool_use: {|frame|
+      if $frame.topic != "message" { return }
+      if $frame.meta.role != "assistant" { return }
+      if $frame.meta.message.stop_reason != "tool_use" { return }
+      let content = .cas $frame.hash | from json
+      $content | where type == "tool_use" | each {run-tool}
+    }
+  }
 }
 
 export def handle-tool-use-request [frame] {
-  do (handlers).tool_use $frame | to json -r | .append message --meta {role: "user" continues: $frame.id}
+  do (handlers).tool_use $frame | to json -r | .append message --meta {
+    mime_type: "application/json"
+    role: "user"
+    continues: $frame.id
+  }
 }
-
-
 
 export def thread_bak [] {
   .cat | where topic == "message" | each {|f|
@@ -103,8 +107,9 @@ export def thread_bak [] {
 
 export def id-to-messages [id: string] {
   let frame = .get $id
-  let role = $frame | get meta? | if ($in | is-not-empty) {$in} else {{}} | default "user" role | get role
-  let content = .cas $frame.hash | from json
+  let meta = $frame | get meta? | default {}
+  let role = $meta | default "user" role | get role
+  let content = .cas $frame.hash | conditional-pipe (($meta | get mime_type?) == "application/json") {from json}
   let message = {
     id: $id
     role: $role
@@ -140,8 +145,18 @@ export def run-thread [id?: string] {
 export def append-assistant-response [continues: string] {
   let message = $in
   $message.content | to json -r | .append message --meta {
+    mime_type: "application/json"
     role: "assistant"
     continues: $continues
     message: ($message | reject content)
   }
+}
+
+export def prep [path: string] {
+  return [
+    $"($path):"
+    "```"
+    (cat -n $path)
+    "```"
+  ] | each {str trim} | str join "\n"
 }

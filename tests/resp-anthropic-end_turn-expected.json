@@ -1,0 +1,25 @@
+[
+  {
+    "message": {
+      "id": "msg_01RvoHrXscBcwYusE3TrquPK",
+      "type": "message",
+      "role": "assistant",
+      "model": "claude-3-5-sonnet-20241022",
+      "content": [],
+      "stop_reason": "end_turn",
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 1535,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 40
+      }
+    },
+    "blocks": [
+      {
+        "type": "text",
+        "content": "\n\nThe current working directory is /Users/andy/s/03cuklfznwp1fw685o7pxckyp/gpt2099.nu"
+      }
+    ]
+  }
+]

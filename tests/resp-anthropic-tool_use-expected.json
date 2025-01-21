@@ -1,0 +1,32 @@
+[
+  {
+    "message": {
+      "id": "msg_01Jbzmn8KjP18CM2sn2vhfcr",
+      "type": "message",
+      "role": "assistant",
+      "model": "claude-3-5-sonnet-20241022",
+      "content": [],
+      "stop_reason": "tool_use",
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 1425,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 69
+      }
+    },
+    "blocks": [
+      {
+        "type": "text",
+        "content": "I'll use the `bash` command to check the current directory using `pwd`:"
+      },
+      {
+        "type": "tool_use",
+        "id": "toolu_01E8nk8iq29eHvkTUyDN6quK",
+        "name": "bash",
+        "input": {},
+        "content": "{\"command\": \"pwd\"}"
+      }
+    ]
+  }
+]

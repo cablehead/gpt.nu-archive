@@ -5,7 +5,19 @@
       "type": "message",
       "role": "assistant",
       "model": "claude-3-5-sonnet-20241022",
-      "content": [],
+      "content": [
+        {
+          "type": "text",
+          "content": "I'll use the `bash` command to check the current directory using `pwd`:"
+        },
+        {
+          "type": "tool_use",
+          "id": "toolu_01E8nk8iq29eHvkTUyDN6quK",
+          "name": "bash",
+          "input": {},
+          "content": "{\"command\": \"pwd\"}"
+        }
+      ],
       "stop_reason": "tool_use",
       "stop_sequence": null,
       "usage": {
@@ -14,19 +26,6 @@
         "cache_read_input_tokens": 0,
         "output_tokens": 69
       }
-    },
-    "blocks": [
-      {
-        "type": "text",
-        "content": "I'll use the `bash` command to check the current directory using `pwd`:"
-      },
-      {
-        "type": "tool_use",
-        "id": "toolu_01E8nk8iq29eHvkTUyDN6quK",
-        "name": "bash",
-        "input": {},
-        "content": "{\"command\": \"pwd\"}"
-      }
-    ]
+    }
   }
 ]

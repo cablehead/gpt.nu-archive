@@ -1,7 +1,7 @@
 export def main [] {
   lines | where ($it | str starts-with "data: ") | each {|x|
     $x | str substring 6.. | from json
-  } | generate {|event state ={ message: null current_block: null blocks: [] }|
+  } | generate {|event state ={ message: null current_block: null }|
 
      mut state = $state
 
@@ -35,7 +35,7 @@ export def main [] {
       }
 
       "content_block_stop" => {
-        $state.blocks = $state.blocks | append ($state.current_block | update content {str join})
+        $state.message.content = $state.message.content | append ($state.current_block | update content {str join})
         $state.current_block = null
         return { next: $state }
       }

@@ -5,7 +5,12 @@
       "type": "message",
       "role": "assistant",
       "model": "claude-3-5-sonnet-20241022",
-      "content": [],
+      "content": [
+        {
+          "type": "text",
+          "content": "\n\nThe current working directory is /Users/andy/s/03cuklfznwp1fw685o7pxckyp/gpt2099.nu"
+        }
+      ],
       "stop_reason": "end_turn",
       "stop_sequence": null,
       "usage": {
@@ -14,12 +19,6 @@
         "cache_read_input_tokens": 0,
         "output_tokens": 40
       }
-    },
-    "blocks": [
-      {
-        "type": "text",
-        "content": "\n\nThe current working directory is /Users/andy/s/03cuklfznwp1fw685o7pxckyp/gpt2099.nu"
-      }
-    ]
+    }
   }
 ]

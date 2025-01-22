@@ -1,11 +1,80 @@
 # edit.nu - Text editor tool implementation
 
+# Path validation helper
+def validate_path [path: string, command: string] {
+  let path_type = ($path | path type)
+  let exists = ($path | path exists)
+
+  if $path_type == "dir" and $command != "view" {
+    error make {
+      msg: $"The path ($path) is a directory and only the `view` command can be used on directories"
+    }
+  }
+
+  if not $exists {
+    error make {
+      msg: $"The path ($path) does not exist. Please provide a valid path."
+    }
+  }
+}
+
 # View command implementation
-def "str_replace_editor view" [path: string] {
-  match ($path | path type) {
-    "file" => (cat -n $path)
-    "dir" => (^find $path -maxdepth 2 -not -path '*/\.*')
-    _ => { error make { msg: $"Invalid path type: ($path)" }}
+def "str_replace_editor view" [
+  path: string
+  --view_range: list<int> # Optional range parameter
+] {
+  validate_path $path "view"
+  let path_type = ($path | path type)
+
+  if $path_type == "dir" and $view_range != null {
+    error make {
+      msg: "The `view_range` parameter is not allowed when `path` points to a directory."
+    }
+  }
+
+  if $path_type == "file" {
+    let content = (open $path | lines)
+    let total_lines = ($content | length)
+
+    if $view_range != null {
+      if ($view_range | length) != 2 {
+        error make { msg: "Invalid `view_range`. It should be a list of two integers." }
+      }
+
+      let start_line = ($view_range | get 0)
+      let end_line = ($view_range | get 1)
+
+      if $start_line < 1 {
+        error make {
+          msg: $"Invalid `view_range`: ($view_range). Its first element `($start_line)` should be within the range of lines of the file: [1, ($total_lines)]"
+        }
+      }
+
+      if $end_line > $total_lines {
+        error make {
+          msg: $"Invalid `view_range`: ($view_range). Its second element `($end_line)` should be smaller than the number of lines in the file: `($total_lines)`"
+        }
+      }
+
+      if $end_line < $start_line {
+        error make {
+          msg: $"Invalid `view_range`: ($view_range). Its second element `($end_line)` should be larger or equal than its first `($start_line)`"
+        }
+      }
+
+      let ranged_content = (
+        $content
+        | range ($start_line - 1)..($end_line)
+        | enumerate
+        | each {|line| $"($line.index + $start_line)\t($line.item)"}
+        | str join "\n"
+      )
+      $"Here's the result of running `cat -n` on ($path):\n($ranged_content)"
+    } else {
+      cat -n $path
+    }
+  } else {
+    ^find $path -maxdepth 2 -not -path '*/\.*'
   }
 }
 
@@ -15,6 +84,8 @@ def "str_replace_editor str_replace" [
   old_str: string # String to replace
   new_str: string # String to replace with
 ] {
+  validate_path $path "str_replace"
+
   # Read the file content
   let file_content = (open $path | into string)
 
@@ -82,7 +153,7 @@ def "str_replace_editor str_replace" [
 def str_replace_editor [] {
   let input = $in.input
   match $input.command {
-    "view" => (str_replace_editor view $input.path)
+    "view" => (str_replace_editor view $input.path --view_range $input.view_range)
     "str_replace" => (str_replace_editor str_replace $input.path $input.old_str $input.new_str)
     _ => { error make { msg: $"Unsupported command: ($input.command)" }}
   }

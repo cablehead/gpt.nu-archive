@@ -179,7 +179,9 @@ export def --env ensure-api-key [name: string] {
   let key_name = $"($name | str upcase)_API_KEY"
   if not ($key_name in $env) {
     let key = input -s $"\nRequired API key: $env.($key_name) = \"...\"\n\nIf you like, I can set it for you. Paste key: "
-    set-env $key_name $key
+
+    {$key_name: $key} | load-env
+
     print "key set 👍\n"
   }
 }

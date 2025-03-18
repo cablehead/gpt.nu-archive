@@ -189,15 +189,15 @@ export def --env ensure-api-key [name: string] {
 export def --env select-provider [] {
   print "Select a provider:"
   let name = $env.GPT_PROVIDERS | columns | input list
-  print $"Selected provider: ($name)"
+  print $name '' # last '' for a new line
 
   let provider = $env.GPT_PROVIDERS | get $name
   ensure-api-key $name
 
-  print -n "Select model:"
+  print "Select model:"
   let model = do $provider.models | get id | input list --fuzzy
-  print $"Selected model: ($model)"
   $env.GPT_PROVIDER = { name: $name model: $model }
+  print $model
 }
 
 export def --env ensure-provider [] {

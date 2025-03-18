@@ -179,7 +179,9 @@ export def --env ensure-api-key [name: string] {
   let key_name = $"($name | str upcase)_API_KEY"
   if not ($key_name in $env) {
     let key = input -s $"\nRequired API key: $env.($key_name) = \"...\"\n\nIf you like, I can set it for you. Paste key: "
-    set-env $key_name $key
+
+    {$key_name: $key} | load-env
+
     print "key set 👍\n"
   }
 }
@@ -187,15 +189,15 @@ export def --env ensure-api-key [name: string] {
 export def --env select-provider [] {
   print "Select a provider:"
   let name = $env.GPT_PROVIDERS | columns | input list
-  print $"Selected provider: ($name)"
+  print $name '' # last '' for a new line
 
   let provider = $env.GPT_PROVIDERS | get $name
   ensure-api-key $name
 
-  print -n "Select model:"
+  print "Select model:"
   let model = do $provider.models | get id | input list --fuzzy
-  print $"Selected model: ($model)"
   $env.GPT_PROVIDER = { name: $name model: $model }
+  print $model
 }
 
 export def --env ensure-provider [] {

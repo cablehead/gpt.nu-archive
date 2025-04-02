@@ -111,24 +111,15 @@ $system_prompt | append {
 
 ## Response Streaming
 
-By default, `gpt call` sends its complete response through the Nushell pipeline:
+The `--streamer` flag lets you process response chunks in real-time while still capturing the complete output:
 
 ```nu
-> [{role: "user" content: "Explain streams"}] | gpt call | save response.txt  # Works silently
+[{role: "user", content: "Write a story"}] | gpt call --streamer {|| print -n $in} | save story.txt
 ```
 
-Use the optional `--streamer` flag to monitor the response while it's being
-generated:
-
-```nu
-> [{role: "user" content: "Explain streams"}] | gpt call --streamer {|| print -n $in} | save response.txt
-This is the response being printed... # Shown in real-time
-While also saving the complete response to response.txt
-```
-
-The streamer closure is called with small snippets of the response, as they are
-generated, and can present them however you like. In this example we're just
-printing to the terminal.
+- Without `--streamer`: Silent operation, output only goes through the pipeline
+- With `--streamer`: See the response as it's generated AND capture the full text
+- The streamer closure receives text fragments as they arrive from the API
 
 ## Command Reference
 
@@ -137,20 +128,42 @@ printing to the terminal.
 Make a call to the configured LLM provider.
 
 ```nu
-# Input type: list<record<role: string, content: string>>
-# Output type: string
+# Input: list of message records
+[{role: "user", content: "Hello"}] | gpt call
+
+# Options:
+#   --streamer <closure>: Process chunks in real-time while maintaining pipeline output
 ```
 
 ### `gpt select-provider`
 
-Interactively select a provider and model. Will prompt for API key if not set.
+Interactively select a provider and model.
+
+```nu
+# No input required
+gpt select-provider
+
+# What it does:
+# 1. Shows available providers (OpenAI, Anthropic, Cerebras, Gemini)
+# 2. Prompts for API key if not already set in environment
+# 3. Lists available models for selected provider
+# 4. Sets $env.GPT_PROVIDER with your choices
+```
 
 ### `gpt models`
 
 List available models for the current provider.
 
 ```nu
-# Output type: table<id: string, created: datetime>
+# No input required
+gpt models
+
+# Output: Table with model IDs and creation dates
+# [
+#   {id: "gpt-4", created: 2023-03-14T00:00:00Z},
+#   {id: "gpt-3.5-turbo", created: 2022-11-28T00:00:00Z},
+#   ...
+# ]
 ```
 
 ## Adding a New Provider

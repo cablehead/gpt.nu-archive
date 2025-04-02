@@ -38,8 +38,12 @@ open README.md | str join | wrap content | wrap {role: "user"} | gpt call | save
 ## Installation
 
 ```nu
-"https://raw.githubusercontent.com/cablehead/gpt.nu/refs/heads/main/gpt.nu" | each {|url| http get $url | save ($url | path basename) }
-use gpt.nu *
+"https://raw.githubusercontent.com/cablehead/gpt.nu/refs/heads/main/gpt.nu"
+| each {|url|
+  http get $url
+  | save ($url | path basename)
+}
+use gpt.nu
 ```
 
 ## Getting Started

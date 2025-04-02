@@ -43,7 +43,8 @@ open README.md | str join | wrap content | wrap {role: "user"} | gpt call | save
   http get $url
   | save ($url | path basename)
 }
-use gpt.nu
+
+overlay use -pr ./gpt.nu
 ```
 
 ## Getting Started

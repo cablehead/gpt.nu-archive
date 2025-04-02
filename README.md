@@ -1,8 +1,31 @@
 # gpt.nu
 
-A Nushell module for interacting with various Large Language Model providers.
-This module provides a unified interface for making calls to different LLM APIs,
-handling streaming responses, and managing provider configurations.
+Integrate LLM providers into Nushell pipelines
+
+```nu
+# Define a system prompt and ask a question
+[{
+  role: "system"
+  content: "You are a direct assistant. Provide concise answers without elaboration or follow-up questions."
+},
+{
+  role: "user"
+  content: "What's 4 + 4?"
+}] | gpt call
+```
+
+## Practical Examples
+
+```nu
+# Process a file through an LLM
+open README.md | str join | wrap content | wrap {role: "user"} | gpt call | save summary.txt
+
+# Stream responses in real-time
+[{role: "user", content: "Write a short poem about coding"}] | gpt call --streamer {|| print -n $in}
+
+# Chain with other Nushell commands
+[{role: "user", content: "List 5 popular Linux distros"}] | gpt call | lines | where {|line| $line =~ "Ubuntu"}
+```
 
 ## Features
 
@@ -12,63 +35,27 @@ handling streaming responses, and managing provider configurations.
 - Easy provider configuration and switching
 - [Easy to add new providers](#adding-a-new-provider)
 
-Here is an example of what we are attempting to accomplish. This page will help
-you turn the following pseudo-code pipeline into a functioning example (TBD):
-
-```nu
-collect documents to discuss | inject system prompt | inject RAG results | inject episodic memory | gpt call | analyze results
-```
-
 ## Installation
 
-1. Install [Nushell](https://www.nushell.sh)
-2. Clone this repository
-3. Source the module in your Nushell config:
-
 ```nu
-use path/to/gpt.nu *
+"https://raw.githubusercontent.com/cablehead/gpt.nu/refs/heads/main/gpt.nu" | each {|url| http get $url | save ($url | path basename) }
+use gpt.nu *
 ```
 
-## Basic Usage
+## Getting Started
 
-First, select your provider and model interactively:
-
-```nu
-> gpt select-provider
-Select a provider:
-> openai
-> anthropic
-> cerebras
-> gemini
-
-Selected provider: openai
-
-Required API key: $env.OPENAI_API_KEY = "..."
-If you like, I can set it for you. Paste key: sk-...
-key set 👍
-
-Select model:
-> gpt-4-turbo-preview
-> gpt-4
-> gpt-3.5-turbo
-
-Selected model: gpt-4
-```
-
-Now you can make calls to your chosen LLM:
+Before using gpt.nu, you need to select a provider and model:
 
 ```nu
-# Start with a system prompt
-> [{
-    role: "system"
-    content: "You are a direct assistant. Provide concise answers without elaboration or follow-up questions."
-  },
-  {
-    role: "user"
-    content: "What's 2 + 2?"
-  }] | gpt call
-4
+gpt select-provider
 ```
+
+This interactive command will:
+1. Let you choose from available providers
+2. Prompt for the required API key if not already set
+3. Show available models for your chosen provider
+
+After selecting a provider, you can start using the examples shown above.
 
 ## Programmatic Provider Configuration
 
@@ -108,8 +95,15 @@ You can build message lists using Nushell's append command, which is
 particularly useful for loading stored system prompts:
 
 ```nu
-# Load a system prompt and add a user message
-open system-prompts/coding-assistant.nuon | append {
+# You can combine messages from different sources
+# First create a system prompt
+let system_prompt = {
+    role: "system"
+    content: "You are a coding assistant specialized in writing clear, efficient code."
+}
+
+# Then add a user message and make the call
+$system_prompt | append {
     role: "user"
     content: "Write a function that calculates the Fibonacci sequence"
 } | gpt call

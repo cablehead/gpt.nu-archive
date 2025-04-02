@@ -202,3 +202,9 @@ export def --env ensure-provider [] {
   if $env.GPT_PROVIDER? == null {select-provider}
   ensure-api-key $env.GPT_PROVIDER.name
 }
+
+export def --env models [] {
+  ensure-provider
+  let provider = $env.GPT_PROVIDERS | get $env.GPT_PROVIDER.name
+  do $provider.models
+}

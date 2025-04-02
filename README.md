@@ -7,7 +7,7 @@ handling streaming responses, and managing provider configurations.
 ## Features
 
 - Unified interface for multiple LLM providers
-- Current providers: OpenAI, Anthropic, Cerebras
+- Current providers: OpenAI, Anthropic, Cerebras, Gemini (@eggcaker 🙏)
 - Streaming responses support
 - Easy provider configuration and switching
 - [Easy to add new providers](#adding-a-new-provider)
@@ -39,6 +39,7 @@ Select a provider:
 > openai
 > anthropic
 > cerebras
+> gemini
 
 Selected provider: openai
 
@@ -89,8 +90,9 @@ You can also set API keys directly:
 
 ```nu
 $env.OPENAI_API_KEY = "sk-..."
-$env.ANTHROPIC_API_KEY = "sk-..."
+$env.ANTHROPIC_API_KEY = "sk-ant-..."
 $env.CEREBRAS_API_KEY = "sk-..."
+$env.GEMINI_API_KEY = "..."
 ```
 
 ## Message Format

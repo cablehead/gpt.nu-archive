@@ -1,3 +1,7 @@
+This has been superseded by https://github.com/cablehead/gpt.nu
+
+-----
+
 # gpt.nu
 
 Integrate LLM providers into Nushell pipelines
